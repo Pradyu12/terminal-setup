@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Black Pearl BL pane: shows Ubuntu logo, then usable shell
 sleep 0.5
 clear
 COLS=$(tput cols)
@@ -39,4 +40,5 @@ p "${O}      -+ssssssssssssssss${W}yyy${O}ssss+-"
 p "${O}        :\`+ssssssssssssssssss+:\`"
 p "${O}            .-\\+oossssoo+/-.${R}"
 
-while :; do sleep 300; done
+echo ""
+exec bash --norc --noprofile
