@@ -5,8 +5,7 @@ COLS=$(tput cols)
 ROWS=$(tput lines)
 
 O='\033[38;2;234;182;76m'
-W='\033[48;2;255;255;255m\033[38;2;0;0;0m'
-X='\033[49m\033[38;2;234;182;76m'
+W='\033[38;2;255;255;255m'
 R='\033[0m'
 
 LINES=20
@@ -21,22 +20,22 @@ p() { printf '%*s' "$pad" ""; echo -e "$1"; }
 
 p "${O}            .-/+oossssoo+\\-."
 p "${O}        :\`+ssssssssssssssssss+:\`"
-p "${O}      -+ssssssssssssssssss${W}yy${X}ssss+-"
-p "${O}    .ossssssssssssssssss${W}dMMMNy${X}sssso."
-p "${O}   /sssssssssss${W}hdmmNNmmyNMMMMh${X}ssssss\\"
-p "${O}  +sssssssss${W}hm${X}yd${W}MMMMMMMNddddy${X}ssssssss+"
-p "${O} /ssssssss${W}hNMMM${X}yh${W}hyyyyhmNMMMNh${X}ssssssss\\"
-p "${O}.ssssssss${W}dMMMNh${X}ssssssssss${W}hNMMMd${X}ssssssss."
-p "${O}+ssss${W}hhhyNMMNy${X}ssssssssssss${W}yNMMMy${X}sssssss+"
-p "${O}oss${W}yNMMMNyMMh${X}ssssssssssssss${W}hmmmh${X}ssssssso"
-p "${O}oss${W}yNMMMNyMMh${X}sssssssssssssshmmmh${X}ssssssso"
-p "${O}+ssss${W}hhhyNMMNy${X}ssssssssssss${W}yNMMMy${X}sssssss+"
-p "${O}.ssssssss${W}dMMMNh${X}ssssssssss${W}hNMMMd${X}ssssssss."
-p "${O} \\ssssssss${W}hNMMM${X}yh${W}hyyyyhdNMMMNh${X}ssssssss/"
-p "${O}  +sssssssss${W}dm${X}yd${W}MMMMMMMMddddy${X}ssssssss+"
-p "${O}   \\sssssssssss${W}hdmNNNNmyNMMMMh${X}ssssss/"
-p "${O}    .ossssssssssssssssss${W}dMMMNy${X}sssso."
-p "${O}      -+ssssssssssssssss${W}yyy${X}ssss+-"
+p "${O}      -+ssssssssssssssssss${W}yy${O}ssss+-"
+p "${O}    .ossssssssssssssssss${W}dMMMNy${O}sssso."
+p "${O}   /sssssssssss${W}hdmmNNmmyNMMMMh${O}ssssss\\"
+p "${O}  +sssssssss${W}hm${O}yd${W}MMMMMMMNddddy${O}ssssssss+"
+p "${O} /ssssssss${W}hNMMM${O}yh${W}hyyyyhmNMMMNh${O}ssssssss\\"
+p "${O}.ssssssss${W}dMMMNh${O}ssssssssss${W}hNMMMd${O}ssssssss."
+p "${O}+ssss${W}hhhyNMMNy${O}ssssssssssss${W}yNMMMy${O}sssssss+"
+p "${O}oss${W}yNMMMNyMMh${O}ssssssssssssss${W}hmmmh${O}ssssssso"
+p "${O}oss${W}yNMMMNyMMh${O}sssssssssssssshmmmh${O}ssssssso"
+p "${O}+ssss${W}hhhyNMMNy${O}ssssssssssss${W}yNMMMy${O}sssssss+"
+p "${O}.ssssssss${W}dMMMNh${O}ssssssssss${W}hNMMMd${O}ssssssss."
+p "${O} \\ssssssss${W}hNMMM${O}yh${W}hyyyyhdNMMMNh${O}ssssssss/"
+p "${O}  +sssssssss${W}dm${O}yd${W}MMMMMMMMddddy${O}ssssssss+"
+p "${O}   \\sssssssssss${W}hdmNNNNmyNMMMMh${O}ssssss/"
+p "${O}    .ossssssssssssssssss${W}dMMMNy${O}sssso."
+p "${O}      -+ssssssssssssssss${W}yyy${O}ssss+-"
 p "${O}        :\`+ssssssssssssssssss+:\`"
 p "${O}            .-\\+oossssoo+/-.${R}"
 
