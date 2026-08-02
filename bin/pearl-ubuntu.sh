@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+sleep 0.5
 clear
 COLS=$(tput cols)
 ROWS=$(tput lines)
