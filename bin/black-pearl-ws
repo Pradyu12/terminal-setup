@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Black Pearl workspace: 3-pane tmux layout
-#   TL: "THE BLACK PEARL" text (read-only)         R: btop (graphs)
-#   BL: Ubuntu logo + usable shell (wireshark, etc.)
+#   TL: empty (reserved)                                                R: btop (graphs)
+#   BL: shell
 
 SESSION="pearl"
 
@@ -10,7 +10,7 @@ if tmux has-session -t "$SESSION" 2>/dev/null; then
     exec tmux attach-session -t "$SESSION"
 fi
 
-tmux new-session -d -s "$SESSION" -c "$HOME" 'bash --norc --noprofile ~/.local/bin/pearl-text.sh'
+tmux new-session -d -s "$SESSION" -c "$HOME" 'echo -e "\n\n\n        \033[38;2;232;181;75mTHE BLACK PEARL\033[0m\n\n\n        \033[2mA ship too famous to be forgotten\033[0m"; while :; do sleep 300; done'
 tmux rename-window -t "$SESSION" pearl
 TL=$(tmux display -p '#{pane_id}')
 
@@ -19,7 +19,7 @@ tmux split-window -h -p 60 -t "$TL" 'btop || sleep 999'
 BTOP=$(tmux display -p '#{pane_id}')
 
 tmux select-pane -t "$TL"
-tmux split-window -v -p 40 -t "$TL" 'bash --norc --noprofile ~/.local/bin/pearl-ubuntu.sh'
+tmux split-window -v -p 40 -t "$TL" 'zsh'
 SHELL=$(tmux display -p '#{pane_id}')
 
 tmux set-option -t "$SESSION" status on
