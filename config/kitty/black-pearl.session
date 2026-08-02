@@ -1,0 +1,3 @@
+# Black Pearl workspace: 4-pane layout (builds session if missing, else attaches)
+new_tab
+launch zsh -ilc '~/.local/bin/black-pearl-ws'

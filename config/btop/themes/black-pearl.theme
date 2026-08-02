@@ -1,0 +1,61 @@
+# Black Pearl theme — Midnight Sea & Gold
+theme[main_bg]="#0b0e1a"
+theme[main_fg]="#dbe2e8"
+theme[title]="#e8b54b"
+theme[hi_fg]="#ffd166"
+theme[selected_bg]="#e8b54b"
+theme[selected_fg]="#0b0e1a"
+theme[inactive_fg]="#4a5263"
+theme[graph_text]="#dbe2e8"
+theme[meter_bg]="#3a4152"
+theme[proc_misc]="#e8b54b"
+theme[cpu_box]="#e8b54b"
+theme[mem_box]="#4fb3a8"
+theme[net_box]="#ffd166"
+theme[proc_box]="#a8242f"
+theme[div_line]="#3a4152"
+
+# Temperature graphs: cool → warm
+theme[temp_start]="#4fb3a8"
+theme[temp_mid]="#f0a04b"
+theme[temp_end]="#a8242f"
+
+# CPU graph: gold gradient
+theme[cpu_start]="#ffd166"
+theme[cpu_mid]="#e8b54b"
+theme[cpu_end]="#8b5a2b"
+
+# Mem/Disk free meter
+theme[free_start]="#b8efe6"
+theme[free_mid]="#4fb3a8"
+theme[free_end]="#2d7a72"
+
+# Mem/Disk cached meter
+theme[cached_start]="#f5d9a8"
+theme[cached_mid]="#e8b54b"
+theme[cached_end]="#b8892f"
+
+# Mem/Disk available meter
+theme[available_start]="#cfe0f0"
+theme[available_mid]="#5a6a85"
+theme[available_end]="#3a4a66"
+
+# Mem/Disk used meter
+theme[used_start]="#ffd166"
+theme[used_mid]="#f0a04b"
+theme[used_end]="#c23a44"
+
+# Download graph colors
+theme[download_start]="#4fb3a8"
+theme[download_mid]="#e8b54b"
+theme[download_end]="#ffd166"
+
+# Upload graph colors
+theme[upload_start]="#8b5a2b"
+theme[upload_mid]="#a8242f"
+theme[upload_end]="#ffd166"
+
+# Process box color gradient for threads, mem and cpu usage
+theme[process_start]="#ffd166"
+theme[process_mid]="#f0a04b"
+theme[process_end]="#a8242f"
