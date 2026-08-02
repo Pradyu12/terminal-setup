@@ -7,6 +7,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HOME_DIR="$HOME"
+DRY_RUN=false
+NO_PACKAGES=false
 
 # ─── Colors ───────────────────────────────────────────────────────────────────
 R='\033[0m' BOLD='\033[1m' DIM='\033[2m'
@@ -34,6 +36,7 @@ warn()  { echo -e "  ${YELLOW}[WARN]${R}  $1"; }
 ok()    { echo -e "  ${GREEN}[ OK ]${R}  $1"; }
 fail()  { echo -e "  ${RED}[FAIL]${R}  $1"; }
 ask()   { echo -en "  ${GOLD}[?]${R} $1 "; }
+dry()   { echo -e "  ${DIM}[DRY]  $1${R}"; }
 
 # ─── Detect package manager ───────────────────────────────────────────────────
 detect_pkg_manager() {
@@ -54,6 +57,10 @@ install_pkg() {
     local pkg="$1"
     local mgr
     mgr=$(detect_pkg_manager)
+    if $DRY_RUN; then
+        dry "Would install package: $pkg (via $mgr)"
+        return 0
+    fi
     case "$mgr" in
         apt)    sudo apt-get install -y "$pkg" ;;
         dnf)    sudo dnf install -y "$pkg" ;;
@@ -81,6 +88,14 @@ check_deps() {
         ok "zsh $(command -v zsh)"
     else
         warn "zsh not found (optional — used for shell panes)"
+    fi
+
+    if $NO_PACKAGES; then
+        if (( ${#missing[@]} > 0 )); then
+            warn "Skipping package install (--no-packages). Missing: ${missing[*]}"
+        fi
+        echo ""
+        return
     fi
 
     if (( ${#missing[@]} > 0 )); then
@@ -122,8 +137,10 @@ check_optional() {
     echo ""
 }
 
-# ─── Backup + install helper ─────────────────────────────────────────────────
-# install_file SRC DEST — backs up existing DEST, installs SRC
+# ─── Timestamped backup + install helper ──────────────────────────────────────
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+# install_file SRC DEST — backs up existing DEST with timestamp, installs SRC
 # Returns 0 on success, 1 if skipped
 install_file() {
     local src="$1" dest="$2"
@@ -131,6 +148,10 @@ install_file() {
     dest_dir="$(dirname "$dest")"
 
     if [[ ! -e "$dest" ]]; then
+        if $DRY_RUN; then
+            dry "Would create $dest_dir/ and install $src → $dest"
+            return 0
+        fi
         mkdir -p "$dest_dir"
         cp "$src" "$dest"
         ok "Installed $dest"
@@ -144,14 +165,22 @@ install_file() {
     read -r choice
     case "${choice,,}" in
         o)
+            if $DRY_RUN; then
+                dry "Would overwrite $dest"
+                return 0
+            fi
             cp "$src" "$dest"
             ok "Overwrote $dest"
             return 0
             ;;
         b|*)
-            cp "$dest" "${dest}.bak"
+            if $DRY_RUN; then
+                dry "Would backup $dest → ${dest}.${TIMESTAMP}, then install $src"
+                return 0
+            fi
+            cp "$dest" "${dest}.${TIMESTAMP}"
             cp "$src" "$dest"
-            ok "Installed $dest (backup: ${dest}.bak)"
+            ok "Installed $dest (backup: ${dest}.${TIMESTAMP})"
             return 0
             ;;
         s)
@@ -196,6 +225,10 @@ install_core() {
 # ─── Install kitty ────────────────────────────────────────────────────────────
 install_kitty() {
     if ! command -v kitty &>/dev/null; then
+        if $NO_PACKAGES; then
+            warn "Kitty not installed — skipping (--no-packages)"
+            return
+        fi
         warn "Kitty not installed — installing..."
         install_pkg kitty || { warn "Could not install kitty, skipping kitty config"; return; }
     fi
@@ -209,6 +242,10 @@ install_kitty() {
 # ─── Install fastfetch ────────────────────────────────────────────────────────
 install_fastfetch() {
     if ! command -v fastfetch &>/dev/null; then
+        if $NO_PACKAGES; then
+            warn "Fastfetch not installed — skipping (--no-packages)"
+            return
+        fi
         warn "Fastfetch not installed — installing..."
         install_pkg fastfetch || { warn "Could not install fastfetch, skipping"; return; }
     fi
@@ -225,37 +262,51 @@ install_fastfetch() {
         ask "Overwrite $dest? [y/N] "
         read -r ans
         if [[ "${ans,,}" == "y" ]]; then
-            cp "$dest" "${dest}.bak"
-            sed "s|__HOME__|$HOME_DIR|g" "$src" > "$dest"
-            ok "Installed $dest (backup: ${dest}.bak)"
+            if $DRY_RUN; then
+                dry "Would backup $dest → ${dest}.${TIMESTAMP}, then install $src"
+            else
+                cp "$dest" "${dest}.${TIMESTAMP}"
+                sed "s|__HOME__|$HOME_DIR|g" "$src" > "$dest"
+                ok "Installed $dest (backup: ${dest}.${TIMESTAMP})"
+            fi
         else
             warn "Skipped $dest"
         fi
     else
-        mkdir -p "$(dirname "$dest")"
-        sed "s|__HOME__|$HOME_DIR|g" "$src" > "$dest"
-        ok "Installed $dest"
+        if $DRY_RUN; then
+            dry "Would create $(dirname "$dest")/ and install $src → $dest"
+        else
+            mkdir -p "$(dirname "$dest")"
+            sed "s|__HOME__|$HOME_DIR|g" "$src" > "$dest"
+            ok "Installed $dest"
+        fi
     fi
     echo ""
 }
 
 # ─── Uninstall ────────────────────────────────────────────────────────────────
 uninstall() {
-    echo -e "${CRIM}Uninstall: restoring .bak files where they exist${R}"
-    for bak in \
-        "$HOME_DIR/.tmux.conf.bak" \
-        "$HOME_DIR/.config/tmux/status.sh.bak" \
-        "$HOME_DIR/.config/btop/themes/black-pearl.theme.bak" \
-        "$HOME_DIR/.config/btop/pearl-ws.conf.bak" \
-        "$HOME_DIR/.config/kitty/black-pearl.conf.bak" \
-        "$HOME_DIR/.config/kitty/black-pearl.session.bak" \
-        "$HOME_DIR/.config/fastfetch/config.jsonc.bak" \
-        "$HOME_DIR/.config/ubuntu-logo.ascii.bak"
+    echo -e "${CRIM}Uninstall: restoring backup files where they exist${R}"
+    local restored=0
+
+    # Restore any timestamped backups (most recent first)
+    for config in \
+        "$HOME_DIR/.tmux.conf" \
+        "$HOME_DIR/.config/tmux/status.sh" \
+        "$HOME_DIR/.config/btop/themes/black-pearl.theme" \
+        "$HOME_DIR/.config/btop/pearl-ws.conf" \
+        "$HOME_DIR/.config/kitty/black-pearl.conf" \
+        "$HOME_DIR/.config/kitty/black-pearl.session" \
+        "$HOME_DIR/.config/fastfetch/config.jsonc" \
+        "$HOME_DIR/.config/ubuntu-logo.ascii"
     do
-        if [[ -f "$bak" ]]; then
-            dest="${bak%.bak}"
-            cp "$bak" "$dest"
-            ok "Restored $dest from $bak"
+        # Find most recent backup: *.2026XXXXXXXX-XXXXXX
+        local latest
+        latest=$(ls -t "${config}".20* 2>/dev/null | head -1)
+        if [[ -n "$latest" ]]; then
+            cp "$latest" "$config"
+            ok "Restored $config from $(basename "$latest")"
+            (( restored++ ))
         fi
     done
 
@@ -267,16 +318,43 @@ uninstall() {
         fi
     done
 
+    if (( restored == 0 )); then
+        info "No backup files found to restore"
+    fi
+
     echo -e "\n${GREEN}Done. Restart tmux/kitty to see changes.${R}\n"
+}
+
+# ─── Usage ────────────────────────────────────────────────────────────────────
+usage() {
+    cat << 'EOF'
+Usage: install.sh [OPTIONS]
+
+Options:
+  --dry-run       Preview actions without changing anything
+  --no-packages   Skip all sudo/package installation, only install configs
+  --uninstall     Restore backups and remove installed scripts
+  --help          Show this help message
+EOF
 }
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 main() {
+    # Parse flags
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --dry-run)      DRY_RUN=true; shift ;;
+            --no-packages)  NO_PACKAGES=true; shift ;;
+            --uninstall)    uninstall; exit 0 ;;
+            --help|-h)      usage; exit 0 ;;
+            *)              fail "Unknown option: $1"; usage; exit 1 ;;
+        esac
+    done
+
     banner
 
-    if [[ "${1:-}" == "--uninstall" ]]; then
-        uninstall
-        exit 0
+    if $DRY_RUN; then
+        echo -e "  ${YELLOW}${BOLD}DRY RUN — no changes will be made${R}\n"
     fi
 
     check_deps

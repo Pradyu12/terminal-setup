@@ -107,13 +107,42 @@ After editing `~/.tmux.conf`:
 tmux source-file ~/.tmux.conf
 ```
 
+## Installer Options
+
+| Flag | Purpose |
+|------|---------|
+| `--dry-run` | Preview every action without writing files or installing packages |
+| `--no-packages` | Skip all `sudo`/package installs — only installs config files |
+| `--uninstall` | Restore backups and remove installed scripts |
+| `--help` | Show usage |
+
+```bash
+# Preview what would happen
+./install.sh --dry-run
+
+# Install configs only (no sudo)
+./install.sh --no-packages
+
+# Full install with kitty + fastfetch
+./install.sh
+```
+
+### Backups
+
+Every existing config file is saved with a timestamp before overwriting:
+```
+~/.tmux.conf.20260802-143022
+```
+
+`--uninstall` restores the most recent timestamped backup for each file.
+
 ## Uninstall
 
 ```bash
 ./install.sh --uninstall
 ```
 
-Restores `.bak` copies of any overwritten config files and removes installed scripts.
+Restores the most recent timestamped backup for each config and removes installed scripts.
 
 ## License
 
