@@ -44,6 +44,8 @@ A pirate-themed terminal workspace built around **tmux**, **kitty**, **btop**, a
 | **tmux** | `tmux.conf` | Prefix `C-a`, gold pane borders, status bar with sparkline graphs |
 | **tmux status** | `config/tmux/status.sh` | CPU / MEM / DSK usage with sparklines |
 | **workspace launcher** | `bin/black-pearl-ws` | Creates/attaches the 3-pane layout |
+| **TL pane** | `bin/pearl-text.sh` | "THE BLACK PEARL" text + shell prompt (run `wireshark`, etc.) |
+| **network stats** | `bin/pearl-net.sh` | Live wired + wireless interface stats |
 | **Ubuntu logo** | `bin/pearl-ubuntu.sh` | Two-color logo (orange ring + white circle) for the BL pane |
 | **ASCII banner** | `bin/pearl-ascii.sh` | "THE BLACK PEARL" ASCII art |
 | **btop theme** | `config/btop/themes/black-pearl.theme` | Midnight sea palette for btop |

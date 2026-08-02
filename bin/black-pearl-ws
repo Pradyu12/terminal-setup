@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Black Pearl workspace: 3-pane tmux layout
-#   TL: empty (reserved)                                                R: btop (graphs)
+#   TL: "THE BLACK PEARL" text + shell (wireshark, etc.)    R: btop (graphs)
 #   BL: shell
 
 SESSION="pearl"
@@ -10,7 +10,7 @@ if tmux has-session -t "$SESSION" 2>/dev/null; then
     exec tmux attach-session -t "$SESSION"
 fi
 
-tmux new-session -d -s "$SESSION" -c "$HOME" 'echo -e "\n\n\n        \033[38;2;232;181;75mTHE BLACK PEARL\033[0m\n\n\n        \033[2mA ship too famous to be forgotten\033[0m"; while :; do sleep 300; done'
+tmux new-session -d -s "$SESSION" -c "$HOME" 'bash ~/.local/bin/pearl-text.sh'
 tmux rename-window -t "$SESSION" pearl
 TL=$(tmux display -p '#{pane_id}')
 
