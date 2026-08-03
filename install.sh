@@ -118,20 +118,27 @@ check_deps() {
 # ─── Optional components ─────────────────────────────────────────────────────
 OPTIONAL_KITTY=false
 OPTIONAL_FASTFETCH=false
+OPTIONAL_HYPRLAND=false
 
 check_optional() {
     echo -e "  ${BOLD}Optional components:${R}"
     echo "    1) Kitty terminal theme + session"
     echo "    2) Fastfetch logo config"
-    echo "    3) Both"
+    echo "    3) Hyprland (anime theme + full desktop)"
+    echo "    4) Kitty + Fastfetch"
+    echo "    5) Kitty + Hyprland"
+    echo "    6) All"
     echo "    0) Skip optional components"
     echo ""
-    ask "Install optional components? [1/2/3/0, default: 0] "
+    ask "Install optional components? [1-6/0, default: 0] "
     read -r opt
     case "$opt" in
         1) OPTIONAL_KITTY=true ;;
         2) OPTIONAL_FASTFETCH=true ;;
-        3) OPTIONAL_KITTY=true; OPTIONAL_FASTFETCH=true ;;
+        3) OPTIONAL_HYPRLAND=true ;;
+        4) OPTIONAL_KITTY=true; OPTIONAL_FASTFETCH=true ;;
+        5) OPTIONAL_KITTY=true; OPTIONAL_HYPRLAND=true ;;
+        6) OPTIONAL_KITTY=true; OPTIONAL_FASTFETCH=true; OPTIONAL_HYPRLAND=true ;;
         *) ;;
     esac
     echo ""
@@ -284,6 +291,52 @@ install_fastfetch() {
     echo ""
 }
 
+# ─── Install Hyprland ────────────────────────────────────────────────────────
+install_hyprland() {
+    info "Installing Hyprland desktop..."
+    echo ""
+
+    # Install packages
+    if ! $NO_PACKAGES; then
+        info "Installing Hyprland packages..."
+        for pkg in hyprland hyprpaper hypridle hyprlock waybar wofi mako-notifier swaylock; do
+            if command -v "$pkg" &>/dev/null; then
+                ok "$pkg already installed"
+            else
+                install_pkg "$pkg" || warn "Could not install $pkg"
+            fi
+        done
+    fi
+
+    # Config files
+    install_file "$SCRIPT_DIR/config/hypr/hyprland.conf"  "$HOME_DIR/.config/hypr/hyprland.conf"
+    install_file "$SCRIPT_DIR/config/hypr/hyprpaper.conf" "$HOME_DIR/.config/hypr/hyprpaper.conf"
+    install_file "$SCRIPT_DIR/config/hypr/hyprlock.conf"  "$HOME_DIR/.config/hypr/hyprlock.conf"
+
+    # Waybar
+    install_file "$SCRIPT_DIR/config/waybar/config.jsonc" "$HOME_DIR/.config/waybar/config.jsonc"
+    install_file "$SCRIPT_DIR/config/waybar/style.css"    "$HOME_DIR/.config/waybar/style.css"
+
+    # Wofi
+    install_file "$SCRIPT_DIR/config/wofi/config"   "$HOME_DIR/.config/wofi/config"
+    install_file "$SCRIPT_DIR/config/wofi/style.css" "$HOME_DIR/.config/wofi/style.css"
+
+    # Mako
+    install_file "$SCRIPT_DIR/config/mako/config" "$HOME_DIR/.config/mako/config"
+
+    # Wallpaper
+    install_file "$SCRIPT_DIR/wallpapers/anime-dark.jpg" "$HOME_DIR/.config/wallpapers/anime-dark.jpg"
+
+    # GDM session entry
+    if [[ -d /usr/share/wayland-sessions ]]; then
+        info "Hyprland session available at login screen"
+    fi
+
+    echo -e "  ${TEAL}Hyprland installed!${R}"
+    echo -e "  ${GOLD}Logout and select 'Hyprland' at GDM login screen${R}"
+    echo ""
+}
+
 # ─── Uninstall ────────────────────────────────────────────────────────────────
 uninstall() {
     echo -e "${CRIM}Uninstall: restoring backup files where they exist${R}"
@@ -334,6 +387,7 @@ Options:
   --dry-run       Preview actions without changing anything
   --no-packages   Skip all sudo/package installation, only install configs
   --uninstall     Restore backups and remove installed scripts
+  --hyprland      Install Hyprland desktop with anime theme
   --help          Show this help message
 EOF
 }
@@ -346,6 +400,7 @@ main() {
             --dry-run)      DRY_RUN=true; shift ;;
             --no-packages)  NO_PACKAGES=true; shift ;;
             --uninstall)    uninstall; exit 0 ;;
+            --hyprland)     OPTIONAL_HYPRLAND=true; shift ;;
             --help|-h)      usage; exit 0 ;;
             *)              fail "Unknown option: $1"; usage; exit 1 ;;
         esac
@@ -360,8 +415,9 @@ main() {
     check_deps
     check_optional
     install_core
-    "$OPTIONAL_KITTY"  && install_kitty
+    "$OPTIONAL_KITTY"     && install_kitty
     "$OPTIONAL_FASTFETCH" && install_fastfetch
+    "$OPTIONAL_HYPRLAND"  && install_hyprland
 
     echo -e "${GOLD}══════════════════════════════════════════════════════════════${R}"
     echo -e "  ${BOLD}${GREEN}Install complete!${R}"
@@ -370,6 +426,9 @@ main() {
     echo -e "    ${GOLD}black-pearl-ws${R}   — launch the 3-pane workspace"
     echo -e "    ${GOLD}pearl-ubuntu.sh${R}  — display Ubuntu logo (for BL pane)"
     echo -e "    ${GOLD}pearl-ascii.sh${R}   — display THE BLACK PEARL banner"
+    if $OPTIONAL_HYPRLAND; then
+        echo -e "    ${GOLD}Hyprland${R}         — select at GDM login for anime desktop"
+    fi
     echo ""
     echo -e "  ${TEAL}Tip:${R} Add to kitty.conf to auto-launch on startup:"
     echo -e "    ${DIM}startup_session ~/.config/kitty/black-pearl.session${R}"

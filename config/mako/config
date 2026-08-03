@@ -1,0 +1,14 @@
+font=JetBrainsMono Nerd Font 12
+background-color=rgba(11, 14, 26, 0.92)
+text-color=#c0caf5
+border-color=rgba(79, 179, 168, 0.4)
+border-radius=10
+border-width=1
+padding=12
+margin=8
+default-time=5000
+max-visible=5
+layer=overlay
+anchor=top-right
+width=350
+height=150

@@ -1,0 +1,84 @@
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: rgba(11, 14, 26, 0.85);
+    border-bottom: 1px solid rgba(79, 179, 168, 0.3);
+    color: #c0caf5;
+}
+
+tooltip {
+    background: rgba(11, 14, 26, 0.95);
+    border: 1px solid rgba(79, 179, 168, 0.4);
+    border-radius: 8px;
+    color: #c0caf5;
+}
+
+tooltip label {
+    color: #c0caf5;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    color: #565f89;
+    border-radius: 6px;
+    margin: 4px 2px;
+    background: transparent;
+    border: none;
+}
+
+#workspaces button.active {
+    color: #e8b54b;
+    background: rgba(232, 181, 75, 0.15);
+    border: 1px solid rgba(232, 181, 75, 0.3);
+}
+
+#workspaces button:hover {
+    background: rgba(79, 179, 168, 0.15);
+    color: #4fb3a8;
+}
+
+#clock {
+    color: #e8b54b;
+    padding: 0 12px;
+}
+
+#cpu {
+    color: #4fb3a8;
+    padding: 0 8px;
+}
+
+#memory {
+    color: #bb9af7;
+    padding: 0 8px;
+}
+
+#disk {
+    color: #7dcfff;
+    padding: 0 8px;
+}
+
+#network {
+    color: #9ece6a;
+    padding: 0 8px;
+}
+
+#pulseaudio {
+    color: #f7768e;
+    padding: 0 8px;
+}
+
+#tray {
+    padding: 0 8px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
